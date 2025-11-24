@@ -1,700 +1,700 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-    <meta name=<title>Vliegtuig Ontwijk Spel</title>
-    <style>
-        /* CSS voor de styling van het spel */
-        body {
-            margin: 0;
-            overflow: hidden; 
-            background-color: #87ceeb; /* Luchtblauw */
-            font-family: sans-serif;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vliegtuig Ontwijk Spel</title>
+    <style>
+        /* CSS voor de styling van het spel */
+        body {
+            margin: 0;
+            overflow: hidden; 
+            background-color: #87ceeb; /* Luchtblauw */
+            font-family: sans-serif;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-        #gameContainer {
-            position: relative;
-            width: 500px; 
-            height: 600px; 
-            border: 3px solid #000;
-            background-color: #e0f2f7; /* Lichtblauwe achtergrond */
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-        }
+        #gameContainer {
+            position: relative;
+            width: 500px; 
+            height: 600px; 
+            border: 3px solid #000;
+            background-color: #e0f2f7; /* Lichtblauwe achtergrond */
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
 
-        /* Styling voor het vliegtuig */
-        #player {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background-color: #ff4500; /* Oranje (vliegtuig) */
-            border-radius: 5px;
-            text-align: center;
-            line-height: 50px;
-            font-size: 30px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-            /* Zorgt voor een vloeiende rotatie bij beweging */
-            transition: transform 0.1s ease-out; 
-            z-index: 10;
-        }
+        /* Styling voor het vliegtuig */
+        #player {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: #ff4500; /* Oranje (vliegtuig) */
+            border-radius: 5px;
+            text-align: center;
+            line-height: 50px;
+            font-size: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+            /* Zorgt voor een vloeiende rotatie bij beweging */
+            transition: transform 0.1s ease-out; 
+            z-index: 10;
+        }
 
-        /* Styling voor de vogels */
-        .obstacle {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            background-color: #8b4513; /* Bruin (vogel) */
-            border-radius: 50%; 
-            font-size: 25px;
-            line-height: 40px;
-            text-align: center;
-            color: #fff;
-            z-index: 5;
-        }
-        .obstacle::before {
-            content: '🐦'; 
-        }
+        /* Styling voor de vogels */
+        .obstacle {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: #8b4513; /* Bruin (vogel) */
+            border-radius: 50%; 
+            font-size: 25px;
+            line-height: 40px;
+            text-align: center;
+            color: #fff;
+            z-index: 5;
+        }
+        .obstacle::before {
+            content: '🐦'; 
+        }
 
-        /* Styling voor de tornado's */
-        .tornado {
-            position: absolute;
-            width: 70px; 
-            height: 120px;
-            background: linear-gradient(to bottom, #a9a9a9, #5c5c5c); 
-            border-radius: 50% / 20%; 
-            /* De 'echte' vorm van de tornado is de achtergrond,
-               het icoon wordt later gedraaid met de animatie */
-            transform: rotate(180deg); 
-            font-size: 60px; 
-            line-height: 120px;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.8);
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-            z-index: 6; 
-            animation: tornadoSpin 2s infinite linear; 
-        }
-        .tornado::before {
-            content: '🌪️'; 
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(0deg); 
-        }
+        /* Styling voor de tornado's */
+        .tornado {
+            position: absolute;
+            width: 70px; 
+            height: 120px;
+            background: linear-gradient(to bottom, #a9a9a9, #5c5c5c); 
+            border-radius: 50% / 20%; 
+            /* De 'echte' vorm van de tornado is de achtergrond,
+               het icoon wordt later gedraaid met de animatie */
+            transform: rotate(180deg); 
+            font-size: 60px; 
+            line-height: 120px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            z-index: 6; 
+            animation: tornadoSpin 2s infinite linear; 
+        }
+        .tornado::before {
+            content: '🌪️'; 
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(0deg); 
+        }
 
-        /* Tornado spin animatie */
-        @keyframes tornadoSpin {
-            from { transform: rotate(0deg) scaleY(1); }
-            to { transform: rotate(360deg) scaleY(1); }
-        }
+        /* Tornado spin animatie */
+        @keyframes tornadoSpin {
+            from { transform: rotate(0deg) scaleY(1); }
+            to { transform: rotate(360deg) scaleY(1); }
+        }
 
 
-        /* Score- en knoppenbalk bovenaan */
-        #topBar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: flex-start; 
-            gap: 20px; /* Afstand tussen score en timer */
-            align-items: center;
-            padding: 10px;
-            box-sizing: border-box;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-bottom: 1px solid #ccc;
-            z-index: 20;
-        }
+        /* Score- en knoppenbalk bovenaan */
+        #topBar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: flex-start; 
+            gap: 20px; /* Afstand tussen score en timer */
+            align-items: center;
+            padding: 10px;
+            box-sizing: border-box;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-bottom: 1px solid #ccc;
+            z-index: 20;
+        }
 
-        #score, #timer {
-            font-size: 1.2em;
-            font-weight: bold;
-        }
+        #score, #timer {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
 
-        /* De knoppen naar rechts duwen */
-        #controls {
-            margin-left: auto; /* Duwt de knoppen naar de rechterkant */
-        }
+        /* De knoppen naar rechts duwen */
+        #controls {
+            margin-left: auto; /* Duwt de knoppen naar de rechterkant */
+        }
 
-        .controlButton {
-            padding: 8px 15px;
-            font-size: 1em;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            margin-left: 10px;
-            font-weight: bold;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-        }
+        .controlButton {
+            padding: 8px 15px;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            margin-left: 10px;
+            font-weight: bold;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
 
-        #pauseButton {
-            background-color: #ffc107; 
-        }
+        #pauseButton {
+            background-color: #ffc107; 
+        }
 
-        #homeButtonTop {
-            background-color: #007bff; 
-            color: white;
-        }
+        #homeButtonTop {
+            background-color: #007bff; 
+            color: white;
+        }
 
-        /* Game Over / Home Schermen */
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7); 
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            z-index: 30;
-            visibility: hidden;
-            opacity: 0;
-            transition: visibility 0s, opacity 0.3s linear;
-        }
+        /* Game Over / Home Schermen */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); 
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 30;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s linear;
+        }
 
-        .overlay.active {
-            visibility: visible;
-            opacity: 1;
-        }
+        .overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
 
-        .overlay h2 {
-            font-size: 3em;
-            margin-bottom: 10px;
-        }
+        .overlay h2 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
 
-        .overlay p {
-            font-size: 1.5em;
-            margin-bottom: 20px;
-        }
+        .overlay p {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
 
-        .overlay button {
-            padding: 12px 25px;
-            font-size: 1.2em;
-            margin: 5px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
-        }
+        .overlay button {
+            padding: 12px 25px;
+            font-size: 1.2em;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+        }
 
-        #goButton {
-            background-color: #28a745; 
-            color: white;
-        }
+        #goButton {
+            background-color: #28a745; 
+            color: white;
+        }
 
-        #homeButtonGameOver {
-            background-color: #007bff; 
-            color: white;
-        }
+        #homeButtonGameOver {
+            background-color: #007bff; 
+            color: white;
+        }
 
-        #startButton {
-            background-color: #28a745; 
-            color: white;
-        }
+        #startButton {
+            background-color: #28a745; 
+            color: white;
+        }
 
-        /* Vliegtuig icoon (voor de speler) */
-        #player::after {
-            content: '✈️'; 
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            /* Deze transform wordt overschreven door JS om de rotatie te beheren */
-            transform: translate(-50%, -50%); 
-        }
-    </style>
+        /* Vliegtuig icoon (voor de speler) */
+        #player::after {
+            content: '✈️'; 
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            /* Deze transform wordt overschreven door JS om de rotatie te beheren */
+            transform: translate(-50%, -50%); 
+        }
+    </style>
 </head>
 <body>
 
-    <div id="gameContainer">
-        <div id="topBar">
-            <span id="score">Score: 0</span>
-            <span id="timer">Tijd: 0s</span>
-            <div id="controls"> <button id="pauseButton" class="controlButton">Pauze</button>
-                <button id="homeButtonTop" class="controlButton">🏠 Home</button>
-            </div>
-        </div>
-
-        <div id="player"></div>
-
-        <div id="homeScreen" class="overlay active">
-            <h2>Vliegtuig Ontwijk Spel</h2>
-            <p>Ontwijk de vogels en tornado's! Gebruik de pijltjestoetsen of WASD om te bewegen.</p>
-            <p>Highscore: <span id="homeHighscore">0</span> | Langste Tijd: <span id="homeLongestTime">0s</span></p>
-            <button id="startButton">START SPEL</button>
-        </div>
-
-        <div id="gameOverScreen" class="overlay">
-            <h2>GAME OVER</h2>
-            <p>Score: <span id="finalScore">0</span> | Tijd: <span id="finalTime">0s</span></p> 
-            <p>Highscore: <span id="gameOverHighscore">0</span> | Langste Tijd: <span id="gameOverLongestTime">0s</span></p> 
-            <button id="goButton">🔄 Opnieuw Spelen</button>
-            <button id="homeButtonGameOver">🏠 Home</button>
-        </div>
-
-        <div id="pauseScreen" class="overlay">
-            <h2>Pauze</h2>
-            <p>Druk op 'Hervat' of de spatiebalk om verder te gaan.</p>
-            <button id="resumeButton" style="background-color: #28a745; color: white;">▶️ Hervat</button>
-            <button id="homeButtonPause">🏠 Home</button>
-        </div>
-    </div>
-
-    <script>
-        // JavaScript voor de spellogica
-        const player = document.getElementById('player');
-        const gameContainer = document.getElementById('gameContainer');
-        const scoreDisplay = document.getElementById('score');
-        const timerDisplay = document.getElementById('timer'); 
-        const finalScoreDisplay = document.getElementById('finalScore');
-        const finalTimeDisplay = document.getElementById('finalTime'); 
-        const gameOverScreen = document.getElementById('gameOverScreen');
-        const homeScreen = document.getElementById('homeScreen');
-        const pauseScreen = document.getElementById('pauseScreen');
-        const gameOverHighscoreDisplay = document.getElementById('gameOverHighscore');
-        const homeHighscoreDisplay = document.getElementById('homeHighscore');
-        const gameOverLongestTimeDisplay = document.getElementById('gameOverLongestTime'); 
-        const homeLongestTimeDisplay = document.getElementById('homeLongestTime'); 
-
-        const containerWidth = gameContainer.clientWidth;
-        const containerHeight = gameContainer.clientHeight;
-        const playerSize = 50;
-
-        let score = 0;
-        let highscore = parseInt(localStorage.getItem('airplaneHighscore') || 0, 10);
-        let longestTime = parseInt(localStorage.getItem('airplaneLongestTime') || 0, 10); 
-        let gameLoopInterval;
-        let obstacleInterval;
-        let difficultyInterval; // Interval voor obstakel SNELHEIDSverhoging (elke 30s)
-        let spawnRateInterval; // Interval voor obstakel FREQUENTIEverhoging (elke 25s)
-        let timerInterval; 
-        let currentTime = 0; 
-
-        let isGameOver = true;
-        let isPaused = false;
-        
-        // --- Moeilijkheidsgraad variabelen ---
-        
-        // 1. Variabelen voor Obstakel Frequentie (Spawn Rate)
-        let currentObstacleIntervalDuration = 1200; // Start met 1.2s tussen obstakels
-        const minObstacleInterval = 400; // De snelste spawn rate is 0.4s
-        const intervalDecreaseStep = 100; // Elke stap wordt 100ms korter
-        const spawnRateStepDuration = 25000; // De frequentie verhoogt elke 25 seconden (25000 ms)
-
-        // 2. Variabelen voor Obstakel Snelheid
-        const difficultyStepDuration = 30000; // Snelheid verhoogt elke 30s
-        let currentObstacleSpeedFactor = 1.0; 
-        const speedIncreaseStep = 0.15; 
-        const maxObstacleSpeedFactor = 3.0; 
-
-        // 3. Variabelen voor Vliegtuig Snelheid
-        const baseMoveSpeed = 8; 
-        const moveSpeedIncreaseStep = 1; // Iets minder agressief dan de obstakels
-        const playerSpeedIncreaseDuration = 25000;
-        let moveSpeed = baseMoveSpeed; 
-        let playerSpeedInterval; 
-
-        // Vliegtuig positie
-        let playerX = containerWidth / 2 - playerSize / 2;
-        let playerY = containerHeight - playerSize - 10;
-        let playerRotation = 0; // Nieuwe variabele voor de rotatie in graden
-        
-        let keys = {}; 
-
-        // --- TIMER FUNCTIES ---
-
-        function startTimer() {
-            currentTime = 0;
-            timerDisplay.textContent = `Tijd: ${currentTime}s`;
-            timerInterval = setInterval(() => {
-                if (!isPaused && !isGameOver) {
-                    currentTime++;
-                    timerDisplay.textContent = `Tijd: ${currentTime}s`;
-                }
-            }, 1000); 
-        }
-
-        function stopTimer() {
-            clearInterval(timerInterval);
-        }
-
-        // --- SPELER SNELHEID FUNCTIES ---
-        
-        function increasePlayerSpeed() {
-            moveSpeed += moveSpeedIncreaseStep;
-        }
-
-        function updatePlayerPosition() {
-            if (isGameOver || isPaused) return;
-
-            // Beweging gebruikt de dynamische 'moveSpeed'
-            let movingLeft = keys['ArrowLeft'] || keys['a'];
-            let movingRight = keys['ArrowRight'] || keys['d'];
-            let newRotation = 0; // Standaard recht
-
-            if (movingLeft) {
-                playerX -= moveSpeed;
-                newRotation = -15; // Draai naar links
-            }
-            if (movingRight) {
-                playerX += moveSpeed;
-                newRotation = 15; // Draai naar rechts
-            }
-            // Beheer rotatie overgang
-            playerRotation = newRotation;
-
-            if (keys['ArrowUp'] || keys['w']) {
-                playerY -= moveSpeed;
-            }
-            if (keys['ArrowDown'] || keys['s']) {
-                playerY += moveSpeed;
-            }
-
-            // Zorg ervoor dat het vliegtuig binnen de grenzen blijft (top bar is ~40px)
-            playerX = Math.max(0, Math.min(containerWidth - playerSize, playerX));
-            playerY = Math.max(40, Math.min(containerHeight - playerSize, playerY)); 
-
-            player.style.left = playerX + 'px';
-            player.style.top = playerY + 'px';
-            
-            // Pas de rotatie toe voor een realistischer effect
-            player.style.transform = `rotate(${playerRotation}deg)`; 
-        }
-
-        // Event listeners voor toetsenbord
-        document.addEventListener('keydown', (e) => {
-            // Voorkom scrollen in het venster met pijltjestoetsen of spatiebalk
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'w', 'a', 's', 'd'].includes(e.key)) {
-                e.preventDefault();
-            }
-
-            if (e.key in keys) {
-                keys[e.key] = true;
-            } else if (e.key === ' ' && !isGameOver) {
-                togglePause();
-            }
-        });
-
-        document.addEventListener('keyup', (e) => {
-            if (e.key in keys) {
-                keys[e.key] = false;
-            }
-        });
-
-        // Initialiseer de keys voor beweging
-        keys['ArrowUp'] = false; keys['ArrowDown'] = false; keys['ArrowLeft'] = false; keys['ArrowRight'] = false;
-        keys['w'] = false; keys['s'] = false; keys['a'] = false; keys['d'] = false;
-
-
-        function createObstacle() {
-            if (isGameOver || isPaused) return;
-
-            // Random kans om een vogel (70%) of een tornado (30%) te maken
-            if (Math.random() < 0.7) { 
-                const obstacle = document.createElement('div');
-                obstacle.classList.add('obstacle');
-                const obstacleSize = 40; 
-                
-                let obstacleX = Math.random() * (containerWidth - obstacleSize);
-                
-                obstacle.style.width = obstacleSize + 'px';
-                obstacle.style.height = obstacleSize + 'px';
-                obstacle.style.left = obstacleX + 'px';
-                obstacle.style.top = -obstacleSize + 'px'; 
-
-                gameContainer.appendChild(obstacle);
-            } else { 
-                createTornado();
-            }
-        }
-
-        function createTornado() {
-            if (isGameOver || isPaused) return;
-
-            const tornado = document.createElement('div');
-            tornado.classList.add('tornado');
-            const tornadoWidth = 70;
-            const tornadoHeight = 120;
-            
-            let tornadoX = Math.random() * (containerWidth - tornadoWidth);
-            
-            tornado.style.width = tornadoWidth + 'px';
-            tornado.style.height = tornadoHeight + 'px';
-            tornado.style.left = tornadoX + 'px';
-            tornado.style.top = -tornadoHeight + 'px'; 
-
-            gameContainer.appendChild(tornado);
-        }
-        
-        // --- Frequentieverhoging ---
-        function decreaseSpawnInterval() {
-            // 1. Verlaag de wachttijd tussen obstakels (minimaal 400ms)
-            if (currentObstacleIntervalDuration > minObstacleInterval) {
-                currentObstacleIntervalDuration = Math.max(minObstacleInterval, currentObstacleIntervalDuration - intervalDecreaseStep);
-                
-                // 2. Stop de oude interval
-                clearInterval(obstacleInterval);
-                // 3. Start de nieuwe interval met de kortere wachttijd
-                obstacleInterval = setInterval(createObstacle, currentObstacleIntervalDuration);
-            }
-            console.log(`Obstakel frequentie verhoogd! Nieuw interval: ${currentObstacleIntervalDuration}ms`);
-        }
-        
-        // Functie voor obstakel SNELHEIDSverhoging
-        function increaseObstacleSpeed() {
-            // Verhoog de snelheid van de obstakels 
-            if (currentObstacleSpeedFactor < maxObstacleSpeedFactor) {
-                currentObstacleSpeedFactor += speedIncreaseStep;
-                console.log(`Obstakel snelheid verhoogd! Nieuwe factor: ${currentObstacleSpeedFactor}`);
-            }
-        }
-
-
-        function updateObstacles() {
-            if (isGameOver || isPaused) return;
-
-            // Zorgt ervoor dat de snelheid toeneemt met de score
-            const scoreSpeedMultiplier = 1 + score * 0.005; 
-            
-            const baseObstacleSpeed = 3; 
-            const baseTornadoSpeed = 2.5;
-
-            // De uiteindelijke snelheid is afhankelijk van Score EN de Tijd (currentObstacleSpeedFactor)
-            const finalObstacleSpeed = baseObstacleSpeed * scoreSpeedMultiplier * currentObstacleSpeedFactor;
-            const finalTornadoSpeed = baseTornadoSpeed * scoreSpeedMultiplier * currentObstacleSpeedFactor;
-
-
-            // Update vogels
-            document.querySelectorAll('.obstacle').forEach(obstacle => {
-                let currentY = parseFloat(obstacle.style.top);
-                currentY += finalObstacleSpeed; 
-                obstacle.style.top = currentY + 'px';
-
-                if (currentY > containerHeight) {
-                    obstacle.remove();
-                    score++; 
-                    scoreDisplay.textContent = `Score: ${score}`;
-                    if (score > highscore) {
-                        highscore = score;
-                        localStorage.setItem('airplaneHighscore', highscore);
-                    }
-                }
-
-                if (checkCollision(player, obstacle)) {
-                    endGame();
-                }
-            });
-
-            // Update tornado's
-            document.querySelectorAll('.tornado').forEach(tornado => {
-                let currentY = parseFloat(tornado.style.top);
-                currentY += finalTornadoSpeed; 
-                tornado.style.top = currentY + 'px';
-
-                if (currentY > containerHeight) {
-                    tornado.remove();
-                    score += 2; // Tornado's geven meer punten
-                    scoreDisplay.textContent = `Score: ${score}`;
-
-                    if (score > highscore) {
-                        highscore = score;
-                        localStorage.setItem('airplaneHighscore', highscore);
-                    }
-                }
-
-                if (checkCollision(player, tornado)) {
-                    endGame();
-                }
-            });
-        }
-
-        function checkCollision(element1, element2) {
-            const rect1 = element1.getBoundingClientRect();
-            const rect2 = element2.getBoundingClientRect();
-            const containerRect = gameContainer.getBoundingClientRect();
-
-            // Relatieve posities t.o.v. gameContainer
-            const pX = rect1.left - containerRect.left;
-            const pY = rect1.top - containerRect.top;
-            const oX = rect2.left - containerRect.left;
-            const oY = rect2.top - containerRect.top;
-
-            // De rect2.width/height is de *werkelijke* grootte op het scherm
-
-            if (element2.classList.contains('tornado')) {
-                // Pas hitbox aan voor tornado's (minder strikte botsing)
-                // Maak de hitbox 20% kleiner aan alle kanten
-                const tornadoHitboxShrinkX = 0.2; 
-                const tornadoHitboxShrinkY = 0.2; 
-
-                const adjustedO_left = oX + rect2.width * tornadoHitboxShrinkX;
-                const adjustedO_right = oX + rect2.width * (1 - tornadoHitboxShrinkX);
-                const adjustedO_top = oY + rect2.height * tornadoHitboxShrinkY;
-                const adjustedO_bottom = oY + rect2.height * (1 - tornadoHitboxShrinkY);
-
-                return (
-                    pX < adjustedO_right &&
-                    pX + rect1.width > adjustedO_left &&
-                    pY < adjustedO_bottom &&
-                    pY + rect1.height > adjustedO_top
-                );
-
-            } else {
-                // Standaard botsing voor vogels
-                return (
-                    pX < oX + rect2.width &&
-                    pX + rect1.width > oX &&
-                    pY < oY + rect2.height &&
-                    pY + rect1.height > oY
-                );
-            }
-        }
-
-        // --- SPEL CYCLUS FUNCTIES ---
-
-        function startGame() {
-            isGameOver = false;
-            isPaused = false;
-            score = 0;
-            scoreDisplay.textContent = `Score: ${score}`;
-            playerX = containerWidth / 2 - playerSize / 2;
-            playerY = containerHeight - playerSize - 10;
-            player.style.left = playerX + 'px';
-            player.style.top = playerY + 'px';
-            playerRotation = 0; // Reset rotatie
-            player.style.transform = `rotate(0deg)`; // Zorg dat het icoon recht staat
-            
-            // Reset snelheden en frequenties
-            moveSpeed = baseMoveSpeed;
-            currentObstacleIntervalDuration = 1200;
-            currentObstacleSpeedFactor = 1.0;
-
-            document.querySelectorAll('.obstacle, .tornado').forEach(o => o.remove());
-
-            gameOverScreen.classList.remove('active');
-            homeScreen.classList.remove('active');
-            pauseScreen.classList.remove('active');
-            
-            // Start de loops
-            gameLoopInterval = setInterval(gameLoop, 1000 / 60); 
-            // Gebruik de actuele intervalduur om te starten
-            obstacleInterval = setInterval(createObstacle, currentObstacleIntervalDuration); 
-            
-            // Start de Moeilijkheidsgraad Intervallen
-            difficultyInterval = setInterval(increaseObstacleSpeed, difficultyStepDuration); 
-            playerSpeedInterval = setInterval(increasePlayerSpeed, playerSpeedIncreaseDuration); 
-            spawnRateInterval = setInterval(decreaseSpawnInterval, spawnRateStepDuration);
-            
-            // Start de timer
-            startTimer(); 
-            
-            // Zorg ervoor dat de pauzeknop weer 'Pauze' toont
-            document.getElementById('pauseButton').textContent = 'Pauze';
-        }
-
-        function endGame() {
-            isGameOver = true;
-            clearInterval(gameLoopInterval);
-            clearInterval(obstacleInterval);
-            clearInterval(difficultyInterval); 
-            clearInterval(playerSpeedInterval); 
-            clearInterval(spawnRateInterval); 
-            stopTimer(); 
-
-            // Update Langste Tijd
-            if (currentTime > longestTime) {
-                longestTime = currentTime;
-                localStorage.setItem('airplaneLongestTime', longestTime);
-            }
-            
-            finalScoreDisplay.textContent = score;
-            finalTimeDisplay.textContent = `${currentTime}s`; 
-            gameOverHighscoreDisplay.textContent = highscore;
-            gameOverLongestTimeDisplay.textContent = `${longestTime}s`; 
-            gameOverScreen.classList.add('active');
-        }
-
-        function goToHome() {
-            clearInterval(gameLoopInterval);
-            clearInterval(obstacleInterval);
-            clearInterval(difficultyInterval);
-            clearInterval(playerSpeedInterval); 
-            clearInterval(spawnRateInterval); 
-            stopTimer(); 
-            isGameOver = true;
-            isPaused = false;
-            
-            // Zorg ervoor dat de highscore en longest time op het startscherm worden weergegeven
-            highscore = parseInt(localStorage.getItem('airplaneHighscore') || 0, 10);
-            longestTime = parseInt(localStorage.getItem('airplaneLongestTime') || 0, 10);
-
-            homeHighscoreDisplay.textContent = highscore;
-            homeLongestTimeDisplay.textContent = `${longestTime}s`; 
-
-            document.querySelectorAll('.obstacle, .tornado').forEach(o => o.remove());
-
-            // Reset Timer Display 
-            timerDisplay.textContent = `Tijd: 0s`;
-            scoreDisplay.textContent = `Score: 0`;
-
-            gameOverScreen.classList.remove('active');
-            pauseScreen.classList.remove('active');
-            homeScreen.classList.add('active');
-        }
-
-        function togglePause() {
-            if (isGameOver) return;
-
-            isPaused = !isPaused;
-
-            if (isPaused) {
-                clearInterval(gameLoopInterval);
-                clearInterval(obstacleInterval);
-                clearInterval(difficultyInterval); 
-                clearInterval(playerSpeedInterval); 
-                clearInterval(spawnRateInterval); 
-                pauseScreen.classList.add('active');
-                document.getElementById('pauseButton').textContent = '▶️ Hervat';
-            } else {
-                gameLoopInterval = setInterval(gameLoop, 1000 / 60);
-                // Herstart met de actuele moeilijkheidsgraad instellingen
-                obstacleInterval = setInterval(createObstacle, currentObstacleIntervalDuration); 
-                difficultyInterval = setInterval(increaseObstacleSpeed, difficultyStepDuration); 
-                playerSpeedInterval = setInterval(increasePlayerSpeed, playerSpeedIncreaseDuration); 
-                spawnRateInterval = setInterval(decreaseSpawnInterval, spawnRateStepDuration); 
-                pauseScreen.classList.remove('active');
-                document.getElementById('pauseButton').textContent = 'Pauze';
-            }
-        }
-
-        function gameLoop() {
-            updatePlayerPosition();
-            updateObstacles();
-        }
-
-        // --- INITIALISATIE & EVENT LISTENERS ---
-
-        // Initialiseer met Home Scherm
-        goToHome(); 
-
-        // Knoppen Event Listeners
-        document.getElementById('startButton').addEventListener('click', startGame);
-        document.getElementById('goButton').addEventListener('click', startGame);
-        document.getElementById('pauseButton').addEventListener('click', togglePause);
-        document.getElementById('resumeButton').addEventListener('click', togglePause);
-        document.getElementById('homeButtonTop').addEventListener('click', goToHome);
-        document.getElementById('homeButtonGameOver').addEventListener('click', goToHome);
-        document.getElementById('homeButtonPause').addEventListener('click', goToHome);
-
-    </script>
+    <div id="gameContainer">
+        <div id="topBar">
+            <span id="score">Score: 0</span>
+            <span id="timer">Tijd: 0s</span>
+            <div id="controls"> <button id="pauseButton" class="controlButton">Pauze</button>
+                <button id="homeButtonTop" class="controlButton">🏠 Home</button>
+            </div>
+        </div>
+
+        <div id="player"></div>
+
+        <div id="homeScreen" class="overlay active">
+            <h2>Vliegtuig Ontwijk Spel</h2>
+            <p>Ontwijk de vogels en tornado's! Gebruik de pijltjestoetsen of WASD om te bewegen.</p>
+            <p>Highscore: <span id="homeHighscore">0</span> | Langste Tijd: <span id="homeLongestTime">0s</span></p>
+            <button id="startButton">START SPEL</button>
+        </div>
+
+        <div id="gameOverScreen" class="overlay">
+            <h2>GAME OVER</h2>
+            <p>Score: <span id="finalScore">0</span> | Tijd: <span id="finalTime">0s</span></p> 
+            <p>Highscore: <span id="gameOverHighscore">0</span> | Langste Tijd: <span id="gameOverLongestTime">0s</span></p> 
+            <button id="goButton">🔄 Opnieuw Spelen</button>
+            <button id="homeButtonGameOver">🏠 Home</button>
+        </div>
+
+        <div id="pauseScreen" class="overlay">
+            <h2>Pauze</h2>
+            <p>Druk op 'Hervat' of de spatiebalk om verder te gaan.</p>
+            <button id="resumeButton" style="background-color: #28a745; color: white;">▶️ Hervat</button>
+            <button id="homeButtonPause">🏠 Home</button>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript voor de spellogica
+        const player = document.getElementById('player');
+        const gameContainer = document.getElementById('gameContainer');
+        const scoreDisplay = document.getElementById('score');
+        const timerDisplay = document.getElementById('timer'); 
+        const finalScoreDisplay = document.getElementById('finalScore');
+        const finalTimeDisplay = document.getElementById('finalTime'); 
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const homeScreen = document.getElementById('homeScreen');
+        const pauseScreen = document.getElementById('pauseScreen');
+        const gameOverHighscoreDisplay = document.getElementById('gameOverHighscore');
+        const homeHighscoreDisplay = document.getElementById('homeHighscore');
+        const gameOverLongestTimeDisplay = document.getElementById('gameOverLongestTime'); 
+        const homeLongestTimeDisplay = document.getElementById('homeLongestTime'); 
+
+        const containerWidth = gameContainer.clientWidth;
+        const containerHeight = gameContainer.clientHeight;
+        const playerSize = 50;
+
+        let score = 0;
+        let highscore = parseInt(localStorage.getItem('airplaneHighscore') || 0, 10);
+        let longestTime = parseInt(localStorage.getItem('airplaneLongestTime') || 0, 10); 
+        let gameLoopInterval;
+        let obstacleInterval;
+        let difficultyInterval; // Interval voor obstakel SNELHEIDSverhoging (elke 30s)
+        let spawnRateInterval; // Interval voor obstakel FREQUENTIEverhoging (elke 25s)
+        let timerInterval; 
+        let currentTime = 0; 
+
+        let isGameOver = true;
+        let isPaused = false;
+        
+        // --- Moeilijkheidsgraad variabelen ---
+        
+        // 1. Variabelen voor Obstakel Frequentie (Spawn Rate)
+        let currentObstacleIntervalDuration = 1200; // Start met 1.2s tussen obstakels
+        const minObstacleInterval = 400; // De snelste spawn rate is 0.4s
+        const intervalDecreaseStep = 100; // Elke stap wordt 100ms korter
+        const spawnRateStepDuration = 25000; // De frequentie verhoogt elke 25 seconden (25000 ms)
+
+        // 2. Variabelen voor Obstakel Snelheid
+        const difficultyStepDuration = 30000; // Snelheid verhoogt elke 30s
+        let currentObstacleSpeedFactor = 1.0; 
+        const speedIncreaseStep = 0.15; 
+        const maxObstacleSpeedFactor = 3.0; 
+
+        // 3. Variabelen voor Vliegtuig Snelheid
+        const baseMoveSpeed = 8; 
+        const moveSpeedIncreaseStep = 1; // Iets minder agressief dan de obstakels
+        const playerSpeedIncreaseDuration = 25000;
+        let moveSpeed = baseMoveSpeed; 
+        let playerSpeedInterval; 
+
+        // Vliegtuig positie
+        let playerX = containerWidth / 2 - playerSize / 2;
+        let playerY = containerHeight - playerSize - 10;
+        let playerRotation = 0; // Nieuwe variabele voor de rotatie in graden
+        
+        let keys = {}; 
+
+        // --- TIMER FUNCTIES ---
+
+        function startTimer() {
+            currentTime = 0;
+            timerDisplay.textContent = `Tijd: ${currentTime}s`;
+            timerInterval = setInterval(() => {
+                if (!isPaused && !isGameOver) {
+                    currentTime++;
+                    timerDisplay.textContent = `Tijd: ${currentTime}s`;
+                }
+            }, 1000); 
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        // --- SPELER SNELHEID FUNCTIES ---
+        
+        function increasePlayerSpeed() {
+            moveSpeed += moveSpeedIncreaseStep;
+        }
+
+        function updatePlayerPosition() {
+            if (isGameOver || isPaused) return;
+
+            // Beweging gebruikt de dynamische 'moveSpeed'
+            let movingLeft = keys['ArrowLeft'] || keys['a'];
+            let movingRight = keys['ArrowRight'] || keys['d'];
+            let newRotation = 0; // Standaard recht
+
+            if (movingLeft) {
+                playerX -= moveSpeed;
+                newRotation = -15; // Draai naar links
+            }
+            if (movingRight) {
+                playerX += moveSpeed;
+                newRotation = 15; // Draai naar rechts
+            }
+            // Beheer rotatie overgang
+            playerRotation = newRotation;
+
+            if (keys['ArrowUp'] || keys['w']) {
+                playerY -= moveSpeed;
+            }
+            if (keys['ArrowDown'] || keys['s']) {
+                playerY += moveSpeed;
+            }
+
+            // Zorg ervoor dat het vliegtuig binnen de grenzen blijft (top bar is ~40px)
+            playerX = Math.max(0, Math.min(containerWidth - playerSize, playerX));
+            playerY = Math.max(40, Math.min(containerHeight - playerSize, playerY)); 
+
+            player.style.left = playerX + 'px';
+            player.style.top = playerY + 'px';
+            
+            // Pas de rotatie toe voor een realistischer effect
+            player.style.transform = `rotate(${playerRotation}deg)`; 
+        }
+
+        // Event listeners voor toetsenbord
+        document.addEventListener('keydown', (e) => {
+            // Voorkom scrollen in het venster met pijltjestoetsen of spatiebalk
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'w', 'a', 's', 'd'].includes(e.key)) {
+                e.preventDefault();
+            }
+
+            if (e.key in keys) {
+                keys[e.key] = true;
+            } else if (e.key === ' ' && !isGameOver) {
+                togglePause();
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key in keys) {
+                keys[e.key] = false;
+            }
+        });
+
+        // Initialiseer de keys voor beweging
+        keys['ArrowUp'] = false; keys['ArrowDown'] = false; keys['ArrowLeft'] = false; keys['ArrowRight'] = false;
+        keys['w'] = false; keys['s'] = false; keys['a'] = false; keys['d'] = false;
+
+
+        function createObstacle() {
+            if (isGameOver || isPaused) return;
+
+            // Random kans om een vogel (70%) of een tornado (30%) te maken
+            if (Math.random() < 0.7) { 
+                const obstacle = document.createElement('div');
+                obstacle.classList.add('obstacle');
+                const obstacleSize = 40; 
+                
+                let obstacleX = Math.random() * (containerWidth - obstacleSize);
+                
+                obstacle.style.width = obstacleSize + 'px';
+                obstacle.style.height = obstacleSize + 'px';
+                obstacle.style.left = obstacleX + 'px';
+                obstacle.style.top = -obstacleSize + 'px'; 
+
+                gameContainer.appendChild(obstacle);
+            } else { 
+                createTornado();
+            }
+        }
+
+        function createTornado() {
+            if (isGameOver || isPaused) return;
+
+            const tornado = document.createElement('div');
+            tornado.classList.add('tornado');
+            const tornadoWidth = 70;
+            const tornadoHeight = 120;
+            
+            let tornadoX = Math.random() * (containerWidth - tornadoWidth);
+            
+            tornado.style.width = tornadoWidth + 'px';
+            tornado.style.height = tornadoHeight + 'px';
+            tornado.style.left = tornadoX + 'px';
+            tornado.style.top = -tornadoHeight + 'px'; 
+
+            gameContainer.appendChild(tornado);
+        }
+        
+        // --- Frequentieverhoging ---
+        function decreaseSpawnInterval() {
+            // 1. Verlaag de wachttijd tussen obstakels (minimaal 400ms)
+            if (currentObstacleIntervalDuration > minObstacleInterval) {
+                currentObstacleIntervalDuration = Math.max(minObstacleInterval, currentObstacleIntervalDuration - intervalDecreaseStep);
+                
+                // 2. Stop de oude interval
+                clearInterval(obstacleInterval);
+                // 3. Start de nieuwe interval met de kortere wachttijd
+                obstacleInterval = setInterval(createObstacle, currentObstacleIntervalDuration);
+            }
+            console.log(`Obstakel frequentie verhoogd! Nieuw interval: ${currentObstacleIntervalDuration}ms`);
+        }
+        
+        // Functie voor obstakel SNELHEIDSverhoging
+        function increaseObstacleSpeed() {
+            // Verhoog de snelheid van de obstakels 
+            if (currentObstacleSpeedFactor < maxObstacleSpeedFactor) {
+                currentObstacleSpeedFactor += speedIncreaseStep;
+                console.log(`Obstakel snelheid verhoogd! Nieuwe factor: ${currentObstacleSpeedFactor}`);
+            }
+        }
+
+
+        function updateObstacles() {
+            if (isGameOver || isPaused) return;
+
+            // Zorgt ervoor dat de snelheid toeneemt met de score
+            const scoreSpeedMultiplier = 1 + score * 0.005; 
+            
+            const baseObstacleSpeed = 3; 
+            const baseTornadoSpeed = 2.5;
+
+            // De uiteindelijke snelheid is afhankelijk van Score EN de Tijd (currentObstacleSpeedFactor)
+            const finalObstacleSpeed = baseObstacleSpeed * scoreSpeedMultiplier * currentObstacleSpeedFactor;
+            const finalTornadoSpeed = baseTornadoSpeed * scoreSpeedMultiplier * currentObstacleSpeedFactor;
+
+
+            // Update vogels
+            document.querySelectorAll('.obstacle').forEach(obstacle => {
+                let currentY = parseFloat(obstacle.style.top);
+                currentY += finalObstacleSpeed; 
+                obstacle.style.top = currentY + 'px';
+
+                if (currentY > containerHeight) {
+                    obstacle.remove();
+                    score++; 
+                    scoreDisplay.textContent = `Score: ${score}`;
+                    if (score > highscore) {
+                        highscore = score;
+                        localStorage.setItem('airplaneHighscore', highscore);
+                    }
+                }
+
+                if (checkCollision(player, obstacle)) {
+                    endGame();
+                }
+            });
+
+            // Update tornado's
+            document.querySelectorAll('.tornado').forEach(tornado => {
+                let currentY = parseFloat(tornado.style.top);
+                currentY += finalTornadoSpeed; 
+                tornado.style.top = currentY + 'px';
+
+                if (currentY > containerHeight) {
+                    tornado.remove();
+                    score += 2; // Tornado's geven meer punten
+                    scoreDisplay.textContent = `Score: ${score}`;
+
+                    if (score > highscore) {
+                        highscore = score;
+                        localStorage.setItem('airplaneHighscore', highscore);
+                    }
+                }
+
+                if (checkCollision(player, tornado)) {
+                    endGame();
+                }
+            });
+        }
+
+        function checkCollision(element1, element2) {
+            const rect1 = element1.getBoundingClientRect();
+            const rect2 = element2.getBoundingClientRect();
+            const containerRect = gameContainer.getBoundingClientRect();
+
+            // Relatieve posities t.o.v. gameContainer
+            const pX = rect1.left - containerRect.left;
+            const pY = rect1.top - containerRect.top;
+            const oX = rect2.left - containerRect.left;
+            const oY = rect2.top - containerRect.top;
+
+            // De rect2.width/height is de *werkelijke* grootte op het scherm
+
+            if (element2.classList.contains('tornado')) {
+                // Pas hitbox aan voor tornado's (minder strikte botsing)
+                // Maak de hitbox 20% kleiner aan alle kanten
+                const tornadoHitboxShrinkX = 0.2; 
+                const tornadoHitboxShrinkY = 0.2; 
+
+                const adjustedO_left = oX + rect2.width * tornadoHitboxShrinkX;
+                const adjustedO_right = oX + rect2.width * (1 - tornadoHitboxShrinkX);
+                const adjustedO_top = oY + rect2.height * tornadoHitboxShrinkY;
+                const adjustedO_bottom = oY + rect2.height * (1 - tornadoHitboxShrinkY);
+
+                return (
+                    pX < adjustedO_right &&
+                    pX + rect1.width > adjustedO_left &&
+                    pY < adjustedO_bottom &&
+                    pY + rect1.height > adjustedO_top
+                );
+
+            } else {
+                // Standaard botsing voor vogels
+                return (
+                    pX < oX + rect2.width &&
+                    pX + rect1.width > oX &&
+                    pY < oY + rect2.height &&
+                    pY + rect1.height > oY
+                );
+            }
+        }
+
+        // --- SPEL CYCLUS FUNCTIES ---
+
+        function startGame() {
+            isGameOver = false;
+            isPaused = false;
+            score = 0;
+            scoreDisplay.textContent = `Score: ${score}`;
+            playerX = containerWidth / 2 - playerSize / 2;
+            playerY = containerHeight - playerSize - 10;
+            player.style.left = playerX + 'px';
+            player.style.top = playerY + 'px';
+            playerRotation = 0; // Reset rotatie
+            player.style.transform = `rotate(0deg)`; // Zorg dat het icoon recht staat
+            
+            // Reset snelheden en frequenties
+            moveSpeed = baseMoveSpeed;
+            currentObstacleIntervalDuration = 1200;
+            currentObstacleSpeedFactor = 1.0;
+
+            document.querySelectorAll('.obstacle, .tornado').forEach(o => o.remove());
+
+            gameOverScreen.classList.remove('active');
+            homeScreen.classList.remove('active');
+            pauseScreen.classList.remove('active');
+            
+            // Start de loops
+            gameLoopInterval = setInterval(gameLoop, 1000 / 60); 
+            // Gebruik de actuele intervalduur om te starten
+            obstacleInterval = setInterval(createObstacle, currentObstacleIntervalDuration); 
+            
+            // Start de Moeilijkheidsgraad Intervallen
+            difficultyInterval = setInterval(increaseObstacleSpeed, difficultyStepDuration); 
+            playerSpeedInterval = setInterval(increasePlayerSpeed, playerSpeedIncreaseDuration); 
+            spawnRateInterval = setInterval(decreaseSpawnInterval, spawnRateStepDuration);
+            
+            // Start de timer
+            startTimer(); 
+            
+            // Zorg ervoor dat de pauzeknop weer 'Pauze' toont
+            document.getElementById('pauseButton').textContent = 'Pauze';
+        }
+
+        function endGame() {
+            isGameOver = true;
+            clearInterval(gameLoopInterval);
+            clearInterval(obstacleInterval);
+            clearInterval(difficultyInterval); 
+            clearInterval(playerSpeedInterval); 
+            clearInterval(spawnRateInterval); 
+            stopTimer(); 
+
+            // Update Langste Tijd
+            if (currentTime > longestTime) {
+                longestTime = currentTime;
+                localStorage.setItem('airplaneLongestTime', longestTime);
+            }
+            
+            finalScoreDisplay.textContent = score;
+            finalTimeDisplay.textContent = `${currentTime}s`; 
+            gameOverHighscoreDisplay.textContent = highscore;
+            gameOverLongestTimeDisplay.textContent = `${longestTime}s`; 
+            gameOverScreen.classList.add('active');
+        }
+
+        function goToHome() {
+            clearInterval(gameLoopInterval);
+            clearInterval(obstacleInterval);
+            clearInterval(difficultyInterval);
+            clearInterval(playerSpeedInterval); 
+            clearInterval(spawnRateInterval); 
+            stopTimer(); 
+            isGameOver = true;
+            isPaused = false;
+            
+            // Zorg ervoor dat de highscore en longest time op het startscherm worden weergegeven
+            highscore = parseInt(localStorage.getItem('airplaneHighscore') || 0, 10);
+            longestTime = parseInt(localStorage.getItem('airplaneLongestTime') || 0, 10);
+
+            homeHighscoreDisplay.textContent = highscore;
+            homeLongestTimeDisplay.textContent = `${longestTime}s`; 
+
+            document.querySelectorAll('.obstacle, .tornado').forEach(o => o.remove());
+
+            // Reset Timer Display 
+            timerDisplay.textContent = `Tijd: 0s`;
+            scoreDisplay.textContent = `Score: 0`;
+
+            gameOverScreen.classList.remove('active');
+            pauseScreen.classList.remove('active');
+            homeScreen.classList.add('active');
+        }
+
+        function togglePause() {
+            if (isGameOver) return;
+
+            isPaused = !isPaused;
+
+            if (isPaused) {
+                clearInterval(gameLoopInterval);
+                clearInterval(obstacleInterval);
+                clearInterval(difficultyInterval); 
+                clearInterval(playerSpeedInterval); 
+                clearInterval(spawnRateInterval); 
+                pauseScreen.classList.add('active');
+                document.getElementById('pauseButton').textContent = '▶️ Hervat';
+            } else {
+                gameLoopInterval = setInterval(gameLoop, 1000 / 60);
+                // Herstart met de actuele moeilijkheidsgraad instellingen
+                obstacleInterval = setInterval(createObstacle, currentObstacleIntervalDuration); 
+                difficultyInterval = setInterval(increaseObstacleSpeed, difficultyStepDuration); 
+                playerSpeedInterval = setInterval(increasePlayerSpeed, playerSpeedIncreaseDuration); 
+                spawnRateInterval = setInterval(decreaseSpawnInterval, spawnRateStepDuration); 
+                pauseScreen.classList.remove('active');
+                document.getElementById('pauseButton').textContent = 'Pauze';
+            }
+        }
+
+        function gameLoop() {
+            updatePlayerPosition();
+            updateObstacles();
+        }
+
+        // --- INITIALISATIE & EVENT LISTENERS ---
+
+        // Initialiseer met Home Scherm
+        goToHome(); 
+
+        // Knoppen Event Listeners
+        document.getElementById('startButton').addEventListener('click', startGame);
+        document.getElementById('goButton').addEventListener('click', startGame);
+        document.getElementById('pauseButton').addEventListener('click', togglePause);
+        document.getElementById('resumeButton').addEventListener('click', togglePause);
+        document.getElementById('homeButtonTop').addEventListener('click', goToHome);
+        document.getElementById('homeButtonGameOver').addEventListener('click', goToHome);
+        document.getElementById('homeButtonPause').addEventListener('click', goToHome);
+
+    </script>
 </body>
 </html>
